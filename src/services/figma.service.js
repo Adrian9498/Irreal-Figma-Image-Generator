@@ -1,4 +1,3 @@
-
 const BASE_URL = "https://api.figma.com/v1"
 
 
@@ -7,25 +6,59 @@ const BASE_URL = "https://api.figma.com/v1"
  * @param { String } url
  * @returns {String} image_url
  */
-export async function imageUrlGenerator(url){
+export async function imageUrlGenerator(url,figma_token){
 
     let { fileKey, nodeId } = parseFigmaUrl(url);
 
-    console.log(fileKey,nodeId)
+
 
 
     let res_images = await fetch(`${BASE_URL}/images/${fileKey}?ids=${nodeId}`,{
         method: 'GET',
         headers: {
-            "X-Figma-Token": X_FIGMA_TOKEN
+            "X-Figma-Token": figma_token
         },
     })
 
     res_images = await res_images.json()
 
-    return res_images.images[nodeId]
+    let objResult = {
+      image_url: res_images.images[nodeId],
+      fileKey,
+      nodeId
+    }
+
+    return objResult
 }
 
+export async function commentGenerator(fileKey,nodeId,comment,coordinates,figma_token){
+
+
+  let res_comments = await fetch(`${BASE_URL}/files/${fileKey}/comments`,{
+    method: 'POST',
+    headers:{
+      "X-Figma-Token": figma_token,
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      message:comment,
+      client_meta:{
+        node_id: nodeId,
+        node_offset:{
+          x: coordinates.x,
+          y: coordinates.y
+        }
+      }
+    })
+  })
+  
+  res_comments = await res_comments.json();
+
+
+
+  return res_comments.id;
+
+}
 
 /**
  * Function that extracts the necesary info to do the petition

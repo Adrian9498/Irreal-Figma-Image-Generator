@@ -10,9 +10,9 @@ async function iniciarServidor(){
     app.use(express.json())
     app.use(express.urlencoded({extended:false}))
     app.use(routes)
-    app.listen(3001)
+    app.listen(3000)
 
-    console.log("Servidor escuchando en puerto 3001")
+    console.log("Servidor escuchando en puerto 3000")
 }
 
 iniciarServidor()
